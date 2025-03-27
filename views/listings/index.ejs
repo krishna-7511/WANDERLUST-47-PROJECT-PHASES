@@ -1,0 +1,160 @@
+<%layout("/layouts/boilerplate")-%>
+<style>
+  .tax-info {
+    display: none;
+  }
+  .tax-toggler {
+    border: 1px solid black;
+    border-radius: 1rem;
+    height: 3.5rem;
+    padding: 1rem;
+    margin-left: 2rem;
+    display: flex;
+    align-items: center;
+  }
+  .icons-field {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+    border-radius: 1rem;
+    height: 3.5rem;
+    width: 63vw;
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+  }
+  .filter a {
+    text-decoration: none;
+    color: black;
+    opacity: 0.8;
+  }
+</style>
+<body>
+  <div class="filters">
+    <div class="icons-field">
+      <div class="filter">
+        <a href="/filter?name=rooms">
+          <div><i class="fa-solid fa-bed"></i></div>
+          <p>Rooms</p>
+        </a>
+      </div>
+      <div class="filter">
+        <a href="/filter?name=iconic+cities"
+          ><div><i class="fa-solid fa-mountain-city"></i></div>
+          <p>Iconic Cities</p></a
+        >
+      </div>
+      <div class="filter">
+        <a href="/filter?name=mountains"
+          ><div><i class="fa-solid fa-mountain"></i></div>
+          <p>Mountains</p></a
+        >
+      </div>
+      <div class="filter">
+        <a href="/filter?name=castles"
+          ><div><i class="fa-brands fa-fort-awesome"></i></div>
+          <p>Castles</p></a
+        >
+      </div>
+      <div class="filter">
+        <a href="/filter?name=amazing+pools"
+          ><div><i class="fa-solid fa-person-swimming"></i></div>
+          <p>Amazing Pools</p></a
+        >
+      </div>
+      <div class="filter">
+        <a href="/filter?name=campings"
+          ><div><i class="fa-solid fa-campground"></i></div>
+          <p>Campings</p></a
+        >
+      </div>
+      <div class="filter">
+        <a href="/filter?name=farms"
+          ><div><i class="fa-solid fa-cow"></i></div>
+          <p>Farms</p></a
+        >
+      </div>
+      <div class="filter">
+        <a href="/filter?name=arctic"
+          ><div><i class="fa-regular fa-snowflake"></i></div>
+          <p>Arctic</p></a
+        >
+      </div>
+      <div class="filter">
+        <a href="/filter?name=domes"
+          ><div><i class="fa-solid fa-igloo"></i></div>
+          <p>Domes</p></a
+        >
+      </div>
+      <div class="filter">
+        <a href="/filter?name=boats"
+          ><div><i class="fa-solid fa-ship"></i></div>
+          <p>Boats</p></a
+        >
+      </div>
+    </div>
+    <div class="tax-toggler">
+      <div class="form-check form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="flexSwitchCheckDefault"
+        />
+        <label class="form-check-label" for="flexSwitchCheckDefault"
+          >Display total after taxes</label
+        >
+      </div>
+    </div>
+  </div>
+  <div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1">
+    <% for(let listing of allListing){ %>
+    <a href="/listings/<%=listing._id%>" class="listing-link">
+      <div class="card col card listing-card">
+        <img
+          src="<%=listing.image.url%>"
+          class="card-img-top"
+          alt="<%=listing.image.filename%>"
+          style="height: 20rem"
+        />
+        <div class="card-img-overlay"></div>
+        <div class="card-body mt-3">
+          <p class="card-text tax-info">
+            <b><%=listing.title%></b> <br />
+            &#8377;<%=(listing.price * 1.18).toLocaleString("en-IN") %>/night
+            <small class="form-text text-muted">(Taxes are included)</small>
+          </p>
+          <p class="card-text without-tax">
+            <b><%=listing.title%></b> <br />
+            &#8377;<%=(listing.price).toLocaleString("en-IN") %>/night
+            <small class="form-text text-muted">(Taxes are not included)</small>
+          </p>
+        </div>
+      </div>
+    </a>
+    <% } %>
+  </div>
+  <script>
+    // when we click on the flexSwitchCheckDefault then tax-info will be shown on screen and without-tax class will not shown on screen
+    document
+      .getElementById("flexSwitchCheckDefault")
+      .addEventListener("click", function () {
+        let taxInfo = document.querySelectorAll(".tax-info");
+        let withoutTax = document.querySelectorAll(".without-tax");
+        taxInfo.forEach((tax) => {
+          if (tax.style.display != "inline") {
+            tax.style.display = "inline";
+          } else {
+            tax.style.display = "none";
+          }
+        });
+        withoutTax.forEach((tax) => {
+          if (tax.style.display != "none") {
+            tax.style.display = "none";
+          } else {
+            tax.style.display = "inline";
+          }
+        });
+      });
+  </script>
+</body>

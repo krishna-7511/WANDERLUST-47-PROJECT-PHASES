@@ -1,0 +1,94 @@
+<%layout("/layouts/boilerplate")-%>
+<body>
+  <div class="row mb-5">
+    <%if(bookings.length>0){%>
+    <h1 class="mt-3">Your Bookings</h1>
+    <%}%> 
+    <%if(bookings.length==0){%>
+      <h1 class="mt-3">You don't have any previous bookings.</h1>
+      <%}%>
+    <%for(let booking of bookings){%>
+    <div class="card mx-3 mb-5" style="width: 18rem">
+      <img
+        src="<%=booking.listing.image.url%>"
+        class="card-img-top mt-3"
+        alt="<%=booking.listing.image.filename%>"
+        style="height: 200px"
+      />
+      <div class="card-body mt-3">
+        <h5 class="card-title"><%=booking.listing.title%></h5>
+        <h6 class="card-text">Owner Email: <%=booking.listing.owner.email%></h6>
+        <h6 class="card-title">
+          <b>Price:</b> &#8377; <%=
+          booking.listing.price.toLocaleString("en-IN")%>/night &nbsp;<small
+            class="form-text text-muted"
+            >(Taxes are not included.)</small
+          >
+        </h6>
+        <h6 class="card-title">
+          <b>Paid Amount:</b> &#8377; <%=
+          booking.amount.toLocaleString("en-IN")%>/night &nbsp;<small
+            class="form-text text-muted"
+            >(It includes with taxes.)</small
+          >
+        </h6>
+        <p class="card-text mb-3"><%=booking.listing.description%></p>
+      </div>
+      <h5 class="card-text">Your's Details</h5>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Name: <%=booking.name%></li>
+        <li class="list-group-item">Email: <%=booking.email%></li>
+        <li class="list-group-item">Phone Number: <%=booking.contact%></li>
+        <li class="list-group-item">Govt ID: <%=booking.govtId%></li>
+        <li class="list-group-item">No. of Guests: <%=booking.guests%></li>
+        <li class="list-group-item">
+          Check-In Date: <%= new Date(booking.checkin).toLocaleDateString() %>
+        </li>
+        <li class="list-group-item">
+          Check-Out Date: <%= new Date(booking.checkout).toLocaleDateString() %>
+        </li>
+      </ul>
+      <a href="mailto:<%=booking.listing.owner.email%>" class="btn btn-primary mb-3 mt-2 ">Contact Us</a>
+      <a href="/map/<%=booking.listing._id%>" target="_blank" class="btn btn-primary mb-3">Get Directions</a>
+    </div>
+    <%}%> 
+    <%if(adminBooking.length>0){%>
+      <h1 class="mt-3">Your Villa's/Hotel Booking <small class="form-text text-muted">(If you upload your property for rent)</small></h1>
+      <%}%>
+    <% for(let booking of adminBooking) { %> <% if(currUser &&
+    currUser._id.equals(booking.listing.owner._id)) { %>
+    <div class="card mx-3 mb-5" style="width: 18rem">
+      <img
+        src="<%=booking.listing.image.url%>"
+        class="card-img-top mt-3"
+        alt="<%=booking.listing.image.filename%>"
+        style="height: 200px"
+      />
+      <div class="card-body mt-3">
+        <h5 class="card-title"><%=booking.listing.title%></h5>
+        <h6 class="card-title">
+          <b>Price:</b> &#8377; <%=
+          (booking.listing.price).toLocaleString("en-IN")%>/night &nbsp;<small
+            class="form-text text-muted"
+            >(Taxes are not included.)</small
+        </h6>
+      </div>
+      <h5 class="card-text mt-3">Customer's Details:</h5>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">Name: <%=booking.name%></li>
+        <li class="list-group-item">Email: <%=booking.email%></li>
+        <li class="list-group-item">Phone Number: <%=booking.contact%></li>
+        <li class="list-group-item">Govt ID: <%=booking.govtId%></li>
+        <li class="list-group-item">No. of Guests: <%=booking.guests%></li>
+        <li class="list-group-item">
+          Check-In Date: <%= new Date(booking.checkin).toLocaleDateString() %>
+        </li>
+        <li class="list-group-item">
+          Check-Out Date: <%= new Date(booking.checkout).toLocaleDateString() %>
+        </li>
+      </ul>
+      <a href="mailto:<%=booking.email%>" class="btn btn-primary mb-3 mt-2">Contact to Customer</a>
+    </div>
+    <% } %> <% } %> 
+  </div>
+</body>

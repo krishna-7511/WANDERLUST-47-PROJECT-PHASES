@@ -1,0 +1,359 @@
+<%layout("/layouts/boilerplate")-%>
+<body>
+  <div class="row mt-3">
+    <div class="col-8 offset-3">
+      <h3><%= listing.title%></h3>
+    </div>
+    <div class="card col-6 offset-3 show-card listing-card">
+      <img
+        src="<%=listing.image.url%>"
+        class="card-img-top show-img"
+        alt="<%=listing.image.filename%>"
+      />
+      <div class="card-body mt-3">
+        <div class="card-text">
+          <p><b>Owned By:</b> <i><%=listing.owner.username%></i></p>
+          <p><b>Description: </b><%= listing.description%></p>
+          <p><b>Category: </b><%= listing.category%></p>
+          <p>
+            <b>Price:</b> &#8377; <%= (listing.price).toLocaleString("en-IN")%>
+            <small class="form-text text-muted"
+              >(Taxes are not included.)</small
+            >
+          </p>
+          <p><b>Address:</b> <%= listing.location%></p>
+          <p><b>City:</b> <%= listing.city%></p>
+          <p><b>Country:</b> <%= listing.country%></p>
+        </div>
+      </div>
+    </div>
+    <br />
+    <%if(currUser && currUser._id.equals(listing.owner._id)) {%>
+    <div class="btns mb-5">
+      <a
+        href="/listings/<%=listing._id%>/edit"
+        class="btn btn-dark col-2 offset-3 edit-btn"
+        >Edit</a
+      >
+      <form method="POST" action="/listings/<%=listing._id%>?_method=DELETE">
+        <button class="btn btn-dark offset-5">Delete</button>
+      </form>
+    </div>
+    <%}%>
+    <div class="col-8 offset-3 mb-3">
+      <hr />
+      <h4>Book this Villa's/Home</h4>
+      <form
+        action="/listings/<%=listing._id%>/bookings"
+        method="POST"
+        novalidate
+        class="needs-validation"
+        id="bookingForm"
+      >
+        <!-- take the name, govt ID,not of guests -->
+        <div class="mb-3 mt-3 col-8">
+          <label for="name" class="form-label">Name</label>
+          <input
+            type="text"
+            name="booking[name]"
+            class="form-control"
+            required
+          />
+          <div class="invalid-feedback">Please provide a name.</div>
+        </div>
+        <div class="mb-3 mt-3 col-8">
+          <label for="email" class="form-label">Email</label>
+          <input
+            type="email"
+            name="booking[email]"
+            class="form-control"
+            required
+          />
+          <div class="invalid-feedback">Please provide an email.</div>
+        </div>
+        <div class="mb-3 mt-3 col-8">
+          <label for="contact" class="form-label">Contact Number</label>
+          <input
+            type="text"
+            name="booking[contact]"
+            class="form-control"
+            required
+          />
+          <div class="invalid-feedback">Please provide a contact number.</div>
+        </div>
+        <div class="mb-3 mt-3 col-8">
+          <label for="govtId" class="form-label">Govt ID </label>
+          <input
+            type="text"
+            name="booking[govtId]"
+            class="form-control"
+            required
+          />
+          <small class="form-text text-muted">(PAN Card, Aadhar Card)</small>
+          <div class="invalid-feedback">Please provide a Govt ID.</div>
+        </div>
+        <div class="mb-3 mt-3 col-8">
+          <label for="guests" class="form-label">No of Guests</label>
+          <input
+            type="number"
+            name="booking[guests]"
+            class="form-control"
+            max="4"
+            min="1"
+            required
+          />
+          <div class="invalid-feedback">Please provide the no of guests.</div>
+          <!-- print message this only for 4 persons only -->
+          <small class="form-text text-muted"
+            >Only upto 4 persons are allowed.</small
+          >
+        </div>
+        <div class="mb-3 mt-3 col-8">
+          <label for="checkin" class="form-label">Check-In Date</label>
+          <input
+            type="date"
+            name="booking[checkin]"
+            class="form-control"
+            required
+            min="<%= new Date().toISOString().split('T')[0] %>"
+          />
+          <div class="invalid-feedback">Please provide a start date.</div>
+        </div>
+        <div class="mb-3 mt-3 col-8">
+          <label for="checkout" class="form-label">Check-Out Date</label>
+          <input
+            type="date"
+            name="booking[checkout]"
+            class="form-control"
+            required
+            min="<%= new Date().toISOString().split('T')[0] %>"
+          />
+          <div class="invalid-feedback">Please provide an end date.</div>
+        </div>
+        <input
+          type="hidden"
+          name="booking[razorpayPaymentId]"
+          id="razorpay_payment_id"
+        />
+        <input
+          type="hidden"
+          name="booking[razorpayOrderId]"
+          id="razorpay_order_id"
+        />
+        <input
+          type="hidden"
+          name="booking[razorpaySignature]"
+          id="razorpay_signature"
+        />
+        <input type="hidden" name="booking[amount]" id="amount" />
+        <button class="btn btn-outline-dark" id="razorpayButton">Book</button
+        ><br />
+        <small class="form-text text-muted"
+          >*Cancellation is not allowed.</small
+        >
+      </form>
+    </div>
+
+    <div class="col-8 offset-3 mb-3">
+      <hr />
+      <%if(currUser) {%>
+      <h4>Leave a Review</h4>
+      <form
+        action="/listings/<%=listing._id%>/reviews"
+        method="POST"
+        novalidate
+        class="needs-validation"
+      >
+        <!-- <div class="mb-3 mt-3 col-4">
+          <label for="rating" class="form-label">Rating</label>
+          <input
+            type="range"
+            min="1"
+            max="5"
+            name="review[rating]"
+            class="form-range"
+          />
+        </div> -->
+        <div class="mb-3 mt-3 col-4">
+          <label for="rating" class="form-label">Rating</label>
+          <fieldset class="starability-slot">
+            <input
+              type="radio"
+              id="no-rate"
+              class="input-no-rate"
+              name="review[rating]"
+              value="1"
+              checked
+              aria-label="No rating."
+            />
+            <input
+              type="radio"
+              id="first-rate1"
+              name="review[rating]"
+              value="1"
+            />
+            <label for="first-rate1" title="Terrible">1 star</label>
+            <input
+              type="radio"
+              id="first-rate2"
+              name="review[rating]"
+              value="2"
+            />
+            <label for="first-rate2" title="Not good">2 stars</label>
+            <input
+              type="radio"
+              id="first-rate3"
+              name="review[rating]"
+              value="3"
+            />
+            <label for="first-rate3" title="Average">3 stars</label>
+            <input
+              type="radio"
+              id="first-rate4"
+              name="review[rating]"
+              value="4"
+            />
+            <label for="first-rate4" title="Very good">4 stars</label>
+            <input
+              type="radio"
+              id="first-rate5"
+              name="review[rating]"
+              value="5"
+            />
+            <label for="first-rate5" title="Amazing">5 stars</label>
+          </fieldset>
+        </div>
+        <div class="mb-3 mt-3">
+          <label for="comment" class="form-label">Comments</label>
+          <textarea
+            name="review[comment]"
+            id="comment"
+            cols="30"
+            rows="5"
+            class="form-control"
+            required
+          ></textarea>
+          <div class="invalid-feedback">
+            Please add some comments for review.
+          </div>
+        </div>
+        <button class="btn btn-outline-dark">Submit</button>
+      </form>
+      <hr />
+      <%}%> <%if(listing.reviews.length > 0) {%>
+      <div class="row">
+        <p><b>All reviews</b></p>
+        <%for (review of listing.reviews){%>
+        <div class="card col-5 ms-3 mb-3">
+          <div class="card-body">
+            <h5 class="card-title mt-2">@<%=review.author.username%></h5>
+            <p
+              class="starability-result card-text"
+              data-rating="<%=review.rating%>"
+            ></p>
+            <div class="card-text"><%=review.comment%></div>
+          </div>
+          <form
+            action="/listings/<%=listing._id%>/reviews/<%=review._id%>?_method=DELETE"
+            class="mb-3 mt-3"
+            method="POST"
+          >
+            <%if(currUser && currUser._id.equals(review.author._id)) {%>
+            <button class="btn btn-sm btn-dark">Delete</button>
+            <%}%>
+          </form>
+        </div>
+        <%}%>
+      </div>
+      <%}%>
+    </div>
+    <div class="col-8 offset-3 mb-3">
+      <h4>Where you'll be</h4>
+      <div id="myMap"></div>
+    </div>
+  </div>
+  <script
+    type="text/javascript"
+    src="https://www.bing.com/api/maps/mapcontrol?callback=GetMap&key=<%=BING_MAPS_API_KEY%>"
+    async
+    defer
+  ></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script type="text/javascript">
+    function GetMap() {
+      var map = new Microsoft.Maps.Map("#myMap", {
+        center: new Microsoft.Maps.Location("<%=latitude%>", "<%=longitude%>"),
+        zoom: 15,
+      });
+      var center = map.getCenter();
+
+      //Create custom Pushpin
+      var pin = new Microsoft.Maps.Pushpin(center, {
+        title: "<%=listing.location%>",
+        // icon: 'images/poi_custom.png',
+      });
+
+      //Add the pushpin to the map
+      map.entities.push(pin);
+      //Add your post map load code here.
+    }
+  </script>
+  <script>
+    // Initialize Razorpay
+    axios
+      .post("/create/orderId", { listingId: "<%=listing._id%>" })
+      .then((info) => {
+        // console.log(info);
+        var razorpayOptions = {
+          key: `<%=(listing.RAZORPAY_API_KEY)%>`, // Replace with your Razorpay API key
+          amount: parseInt(`<%=(listing.price*1.18)%>`), // Replace with the actual amount in paisa
+          currency: "INR",
+          name: `<%=(listing.owner.username)%>`,
+          description: "Booking Payment",
+          order_id: info.data.id, // Replace with the order ID generated on the server
+          retry: false,
+          send_sms_hash: true,
+          handler: function (response) {
+            if (response.razorpay_payment_id) {
+              // Submit the form after successful payment
+              document.getElementById("razorpay_payment_id").value =
+                response.razorpay_payment_id;
+              document.getElementById("razorpay_order_id").value =
+                response.razorpay_order_id;
+              document.getElementById("razorpay_signature").value =
+                response.razorpay_signature;
+              document.getElementById("amount").value = parseInt(
+                `<%=(listing.price*1.18)%>`
+              );
+              document.getElementById("bookingForm").submit();
+              console.log(response);
+
+              // Handle successful payment
+              // console.log("Payment success:", response);
+            } else {
+              // Handle payment failure
+              axios
+                .post("/error")
+                .then(() => {
+                  console.log("Payment failed:", response);
+                })
+                .catch((err) => {
+                  // console.log(err);
+                });
+            }
+          },
+          theme: {
+            color: "#F37254",
+          },
+        };
+
+        var razorpayButton = document.getElementById("razorpayButton");
+        razorpayButton.addEventListener("click", function (e) {
+          // Create order and open Razorpay modal
+          var rzp = new Razorpay(razorpayOptions);
+          rzp.open();
+          e.preventDefault();
+        });
+      });
+  </script>
+</body>
