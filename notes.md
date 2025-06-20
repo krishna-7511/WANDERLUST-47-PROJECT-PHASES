@@ -43,3 +43,5 @@ npm i cloudinary multer storage-cloudinary
 getting stareted with maps and env file is very imp once look out
 
 npm i @mapbox/mapbox-sdk
+
+npm i connect mango for deploy
